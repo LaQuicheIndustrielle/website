@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>robot showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-snap-type: y mandatory; /* Apply snapping to the whole document initially */
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Inter', -apple-system, sans-serif;
+            overscroll-behavior: none;
+            overflow-x: hidden;
+        }
+
+        .video-section {
+            position: relative;
+            height: 400vh; /* increased for better scroll range */
+            /* Removed scroll-snap-type from here */
+        }
+
+        .video-viewport {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* fills screen, crops if needed */
+            display: block;
+            position: relative;
+            z-index: 10;
+        }
+
+        .snap-point {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+            scroll-snap-align: start;
+            pointer-events: none;
+        }
+
+        .frame-text {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 80%;
+            background: rgba(0,0,0,0.5);
+            padding: 2rem 3rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .frame-text.active {
+            opacity: 1;
+        }
+
+        .frame-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+
+        .frame-text p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            text-shadow: 0 1px 10px rgba(0,0,0,0.8);
+        }
+
+        .content-section {
+            min-height: 100vh;
+            padding: 5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            opacity: 0.6;
+        }
+
+        /* fancy loading bar */
+        .load-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+
+        .load-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #0088ff);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">loading frames...</div>
+    <div class="load-progress">
+        <div class="load-progress-bar" id="loadBar"></div>
+    </div>
+
+    <div class="scroll-container" id="scrollContainer">
+        <div class="video-section" id="videoSection">
+            <div class="video-viewport">
+                <canvas id="canvas"></canvas>
+                <div class="frame-text" id="frameText">
+                    <h2></h2>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="contentSection">
+            <div>
+                <h1>Nouvelle partie</h1>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+                <p>aoefhaowefhaoiehfoiaheoifahio</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FRAME_COUNT = 57; // adjust to ur actual frame count
+        const FRAME_PATH = 'blender video/';
+
+        // define snap frames & their text
+        const SNAP_FRAMES = [
+            { frame: 0, title: '', text: '' },
+            { frame: 15, title: 'main controller', text: 'cortex-m4 @ 168mhz, handles all the thinking' },
+            { frame: 30, title: 'sensor array', text: 'lidar + ultrasonic combo for spatial awareness' },
+            { frame: 45, title: 'actuator system', text: 'custom brushless drivers, smooth af' },
+            { frame: 60, title: 'actuator system', text: 'custom brushless drivers, smooth af' },
+        ];
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            console.error('Failed to get 2d context!');
+            alert('Canvas 2d context not available');
+        } else {
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        const videoSection = document.getElementById('videoSection');
+        const contentSection = document.getElementById('contentSection'); // Get the content section
+        const htmlElement = document.documentElement; // Reference to the html element for scroll-snap-type
+        const frameText = document.getElementById('frameText');
+        const loading = document.getElementById('loading');
+        const loadBar = document.getElementById('loadBar');
+
+        let frames = [];
+        let currentFrame = -1; // start at -1 so frame 0 will draw
+
+        // preload all frames
+        async function loadFrames() {
+            const loadPromises = [];
+
+            for (let i = 0; i < FRAME_COUNT; i++) {
+                const promise = new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        frames[i] = img;
+                        const progress = ((i + 1) / FRAME_COUNT) * 100;
+                        loadBar.style.width = `${progress}%`;
+                        resolve();
+                    };
+                    img.onerror = (e) => {
+                        console.error(`failed to load frame ${i}:`, e);
+                        reject(e);
+                    };
+                    img.src = `${FRAME_PATH}${i.toString().padStart(4, '0')}.webp`;
+                });
+                loadPromises.push(promise);
+            }
+
+            await Promise.all(loadPromises);
+
+            // setup canvas dimensions from first frame
+            if (frames[0]) {
+                canvas.width = frames[0].width;
+                canvas.height = frames[0].height;
+            }
+
+            loading.style.display = 'none';
+            loadBar.parentElement.style.display = 'none';
+
+            // create snap points
+            createSnapPoints();
+
+            // init first frame
+            updateFrame(0);
+
+            // trigger initial scroll check
+            window.dispatchEvent(new window.Event('scroll'));
+        }
+
+        function createSnapPoints() {
+            // create invisible snap divs at specific frames
+            SNAP_FRAMES.forEach(snapData => {
+                const snapDiv = document.createElement('div');
+                snapDiv.className = 'snap-point';
+                const topPosition = (snapData.frame / FRAME_COUNT) * 100;
+                snapDiv.style.top = `${topPosition}%`;
+                videoSection.appendChild(snapDiv);
+            });
+        }
+
+        function updateFrame(frameIndex) {
+            frameIndex = Math.max(0, Math.min(frameIndex, FRAME_COUNT - 1));
+
+            if (frames[frameIndex] && frames[frameIndex].complete) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(frames[frameIndex], 0, 0, canvas.width, canvas.height);
+                currentFrame = frameIndex;
+
+                // update text if we're at a snap frame
+                updateFrameText(frameIndex);
+            } else {
+                console.error(`frame ${frameIndex} not loaded or not complete`);
+            }
+        }
+
+        function updateFrameText(frameIndex) {
+            const snapData = SNAP_FRAMES.find(s => Math.abs(s.frame - frameIndex) < 5);
+
+            if (snapData && snapData.title) {
+                frameText.querySelector('h2').textContent = snapData.title;
+                frameText.querySelector('p').textContent = snapData.text;
+                frameText.classList.add('active');
+            } else {
+                frameText.classList.remove('active');
+            }
+        }
+
+        // scroll handler
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const videoTop = videoSection.offsetTop;
+            const videoHeight = videoSection.offsetHeight;
+            const windowHeight = window.innerHeight;
+            const scrollableHeight = videoHeight - windowHeight;
+
+            // Calculate the point where the content section starts relative to the top of the document
+            const contentSectionTop = contentSection.offsetTop;
+
+            // If the user scrolls past the video section, disable scroll-snap-type
+            if (scrollTop >= contentSectionTop - windowHeight / 2) { // You might adjust this threshold
+                htmlElement.style.scrollSnapType = 'none';
+            } else {
+                htmlElement.style.scrollSnapType = 'y mandatory';
+            }
+
+            // Check if we're in the video section for frame updates
+            if (scrollTop >= videoTop && scrollTop <= videoTop + scrollableHeight && scrollableHeight > 0) {
+                const scrollProgress = Math.max(0, Math.min(1, (scrollTop - videoTop) / scrollableHeight));
+                const frameIndex = Math.floor(scrollProgress * (FRAME_COUNT - 1));
+                if (!isNaN(frameIndex)) {
+                    updateFrame(frameIndex);
+                }
+            }
+        });
+
+        // start loading
+        loadFrames().catch(err => {
+            console.error('failed to load frames:', err);
+            loading.textContent = 'failed to load frames, check console';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Team La Quiche Industrielle - RoboCup Sponsorship</title>
+	<link rel="icon" type="image/x-icon" href="./logo.jpeg">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			background: #FEFEFE;
+			color: #333;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+			line-height: 1.6;
+			overscroll-behavior: none;
+			overflow-x: hidden;
+		}
+
+		.video-scroller {
+			position: relative;
+			height: 400vh;
+		}
+
+		.video-viewport {
+			position: sticky;
+			top: 0;
+			width: 100%;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			background: #000;
+		}
+
+		.video-scroller-canvas {
+			width: 100vw;
+			height: 100vh;
+			object-fit: cover;
+			display: block;
+			position: relative;
+			z-index: 10;
+		}
+
+		.frame-text {
+			position: absolute;
+			top: 10%;
+			left: 50%;
+			transform: translateX(-50%);
+			text-align: center;
+			opacity: 0;
+			transition: opacity 0.4s ease;
+			max-width: 800px;
+			background: rgba(254, 254, 254, 0.95);
+			color: #333;
+			padding: 2rem 3rem;
+			border-radius: 12px;
+			z-index: 20;
+			border: 2px solid #E1010E;
+			box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+		}
+
+		.frame-text.active {
+			opacity: 1;
+		}
+
+		.frame-text h2 {
+			font-size: clamp(1.8rem, 4vw, 2.8rem);
+			margin-bottom: 1rem;
+			font-weight: 700;
+			color: #E1010E;
+		}
+
+		.frame-text p {
+			font-size: clamp(1rem, 2.5vw, 1.2rem);
+			line-height: 1.5;
+		}
+
+		.scroll-arrow {
+			position: fixed;
+			bottom: 30px;
+			left: 50%;
+			transform: translateX(-50%);
+			font-size: 2rem;
+			color: #E1010E;
+			animation: bob 2s infinite ease-in-out;
+			z-index: 30;
+			transition: opacity 0.5s ease;
+			cursor: pointer;
+		}
+
+		.scroll-arrow::before {
+			content: '↓';
+		}
+
+		@keyframes bob {
+
+			0%,
+			100% {
+				transform: translateX(-50%) translateY(0);
+			}
+
+			50% {
+				transform: translateX(-50%) translateY(10px);
+			}
+		}
+
+		.content-section {
+			min-height: 80vh;
+			padding: 3rem 2rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			flex-direction: column;
+			gap: 2rem;
+			max-width: 1000px;
+			margin: 0 auto;
+		}
+
+		.content-section h1 {
+			font-size: clamp(2.5rem, 5vw, 3.5rem);
+			margin-bottom: 2rem;
+			color: #E1010E;
+			font-weight: 700;
+		}
+
+		.content-section h2 {
+			font-size: clamp(1.5rem, 3vw, 2rem);
+			margin-bottom: 1rem;
+			color: #333;
+			font-weight: 600;
+		}
+
+		.content-section p {
+			font-size: clamp(1.1rem, 2.5vw, 1.2rem);
+			line-height: 1.7;
+			max-width: 700px;
+		}
+
+		.highlight-box {
+			background: #FEFEFE;
+			border: 2px solid #ddd;
+			border-radius: 12px;
+			padding: 2rem;
+			margin: 2rem 0;
+			text-align: left;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+		}
+
+		.highlight-box.primary {
+			border-color: #E1010E;
+			background: rgba(225, 1, 14, 0.02);
+		}
+
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 2rem;
+			width: 100%;
+			max-width: 800px;
+		}
+
+		.stat-item {
+			background: #FEFEFE;
+			border: 2px solid #eee;
+			border-radius: 12px;
+			padding: 1.5rem;
+			text-align: center;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+			transition: transform 0.2s ease;
+		}
+
+		.stat-item:hover {
+			transform: translateY(-2px);
+		}
+
+		.stat-number {
+			font-size: 2.5rem;
+			font-weight: bold;
+			color: #E1010E;
+			display: block;
+		}
+
+		.sponsor-benefits {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 2rem;
+			width: 100%;
+			text-align: left;
+		}
+
+		.benefit-item {
+			background: #FEFEFE;
+			border: 2px solid #eee;
+			border-radius: 12px;
+			padding: 1.5rem;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+			transition: transform 0.2s ease;
+		}
+
+		.benefit-item:hover {
+			transform: translateY(-2px);
+		}
+
+		.benefit-item h3 {
+			color: #333;
+			font-size: 1.3rem;
+			margin-bottom: 0.5rem;
+			font-weight: 600;
+		}
+
+		.team-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 2rem;
+			width: 100%;
+			text-align: left;
+		}
+
+		.team-member {
+			background: #FEFEFE;
+			border: 2px solid #eee;
+			border-radius: 12px;
+			padding: 1.5rem;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+			transition: transform 0.2s ease;
+		}
+
+		.team-member:hover {
+			transform: translateY(-2px);
+		}
+
+		.team-member h3 {
+			color: #E1010E;
+			font-size: 1.5rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.timeline-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+			gap: 2rem;
+			width: 100%;
+			max-width: 1000px;
+		}
+
+		.timeline-item {
+			background: #FEFEFE;
+			border: 2px solid #eee;
+			border-radius: 12px;
+			padding: 1.5rem;
+			text-align: left;
+			position: relative;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+			transition: transform 0.2s ease;
+		}
+
+		.timeline-item:hover {
+			transform: translateY(-2px);
+		}
+
+		.timeline-item.current {
+			background: rgba(225, 1, 14, 0.05);
+			border-color: #E1010E;
+		}
+
+		.timeline-date {
+			color: #E1010E;
+			font-weight: bold;
+			font-size: 1.2rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.timeline-title {
+			font-weight: 600;
+			margin-bottom: 0.5rem;
+			color: #333;
+		}
+
+		.timeline-location {
+			color: #666;
+			font-size: 0.9rem;
+		}
+
+		.loading-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: #FEFEFE;
+			z-index: 100;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			transition: opacity 0.5s ease;
+			opacity: 0;
+			pointer-events: none;
+		}
+
+		.loading-overlay.loading {
+			opacity: 1;
+			pointer-events: all;
+		}
+
+		.loading-text {
+			font-size: 1.2rem;
+			color: #333;
+		}
+
+		.load-progress-bar {
+			width: 200px;
+			height: 4px;
+			background: #ddd;
+			margin-top: 1rem;
+			border-radius: 2px;
+		}
+
+		.load-progress-fill {
+			height: 100%;
+			background: #E1010E;
+			width: 0;
+			transition: width 0.3s ease;
+			border-radius: 2px;
+		}
+
+		.cta-button {
+			display: inline-block;
+			background: #E1010E;
+			color: #FEFEFE;
+			padding: 1rem 2rem;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: 600;
+			margin-top: 2rem;
+			transition: all 0.3s ease;
+			box-shadow: 0 4px 16px rgba(225, 1, 14, 0.2);
+		}
+
+		.cta-button:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(225, 1, 14, 0.3);
+		}
+
+		.technical-details-button {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.8rem;
+			background: #333;
+			color: #FEFEFE;
+			padding: 1.2rem 2rem;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 1.1rem;
+			margin: 2rem 0;
+			transition: all 0.3s ease;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+		}
+
+		.technical-details-button:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+			background: #222;
+		}
+
+		.links-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 1.5rem;
+			margin-top: 2rem;
+			max-width: 800px;
+		}
+
+		.link-item {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			color: #333;
+			font-weight: 600;
+			text-decoration: none;
+			padding: 1rem;
+			border: 2px solid #ddd;
+			border-radius: 8px;
+			background: #FEFEFE;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+		}
+
+		.link-item:hover {
+			background: #f8f8f8;
+			border-color: #bbb;
+			transform: translateY(-1px);
+		}
+
+		.link-item.primary {
+			color: #E1010E;
+			border-color: #E1010E;
+		}
+
+		.link-item.primary:hover {
+			background: rgba(225, 1, 14, 0.05);
+			border-color: #c5000c;
+		}
+
+		/* Comprehensive Mobile Responsive Design */
+		@media (max-width: 768px) {
+			.video-scroller {
+				height: 300vh;
+				/* Reduce video scroll height on mobile */
+			}
+
+			.frame-text {
+				top: 5%;
+				max-width: 90%;
+				padding: 1.2rem 1.5rem;
+				margin: 0 1rem;
+			}
+
+			.frame-text h2 {
+				font-size: clamp(1.4rem, 6vw, 2rem);
+				margin-bottom: 0.8rem;
+			}
+
+			.frame-text p {
+				font-size: clamp(0.9rem, 4vw, 1.1rem);
+				line-height: 1.4;
+			}
+
+			.content-section {
+				padding: 2rem 1rem;
+				gap: 1.5rem;
+				min-height: auto;
+			}
+
+			.content-section h1 {
+				font-size: clamp(2rem, 8vw, 2.8rem);
+				margin-bottom: 1.5rem;
+				line-height: 1.2;
+			}
+
+			.content-section h2 {
+				font-size: clamp(1.3rem, 6vw, 1.8rem);
+				margin-bottom: 0.8rem;
+			}
+
+			.content-section p {
+				font-size: clamp(1rem, 4vw, 1.1rem);
+				line-height: 1.6;
+				margin-bottom: 1rem;
+			}
+
+			.highlight-box {
+				padding: 1.5rem;
+				margin: 1.5rem 0;
+				border-radius: 8px;
+			}
+
+			.highlight-box h2 {
+				font-size: clamp(1.2rem, 5vw, 1.6rem);
+				margin-bottom: 0.8rem;
+			}
+
+			.highlight-box p {
+				font-size: clamp(0.95rem, 4vw, 1.05rem);
+				margin-bottom: 0.8rem;
+			}
+
+			/* Grid Layouts - Mobile Optimized */
+			.stats-grid {
+				grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+				gap: 1.2rem;
+			}
+
+			.stat-item {
+				padding: 1.2rem 0.8rem;
+			}
+
+			.stat-number {
+				font-size: clamp(1.8rem, 8vw, 2.2rem);
+			}
+
+			.sponsor-benefits {
+				grid-template-columns: 1fr;
+				gap: 1.5rem;
+			}
+
+			.benefit-item {
+				padding: 1.3rem;
+			}
+
+			.benefit-item h3 {
+				font-size: clamp(1.1rem, 5vw, 1.25rem);
+				margin-bottom: 0.8rem;
+			}
+
+			.benefit-item p {
+				font-size: clamp(0.9rem, 4vw, 1rem);
+				line-height: 1.5;
+			}
+
+			.team-grid {
+				grid-template-columns: 1fr;
+				gap: 1.5rem;
+			}
+
+			.team-member {
+				padding: 1.3rem;
+			}
+
+			.team-member h3 {
+				font-size: clamp(1.2rem, 5vw, 1.4rem);
+			}
+
+			.team-member p {
+				font-size: clamp(0.9rem, 4vw, 1rem);
+			}
+
+			.timeline-grid {
+				grid-template-columns: 1fr;
+				gap: 1.2rem;
+			}
+
+			.timeline-item {
+				padding: 1.3rem;
+			}
+
+			.timeline-date {
+				font-size: clamp(1rem, 5vw, 1.15rem);
+			}
+
+			.timeline-title {
+				font-size: clamp(1rem, 4.5vw, 1.1rem);
+			}
+
+			.timeline-location {
+				font-size: clamp(0.85rem, 3.5vw, 0.9rem);
+			}
+
+			.links-grid {
+				grid-template-columns: 1fr;
+				gap: 1rem;
+			}
+
+			.link-item {
+				padding: 1.2rem;
+				font-size: clamp(0.9rem, 4vw, 1rem);
+			}
+
+			/* Buttons - Mobile Optimized */
+			.cta-button {
+				padding: 1.2rem 2rem;
+				font-size: clamp(1rem, 4vw, 1.1rem);
+				margin-top: 1.5rem;
+				border-radius: 6px;
+				width: 100%;
+				max-width: 280px;
+				text-align: center;
+			}
+
+			.technical-details-button {
+				padding: 1.2rem 1.5rem;
+				font-size: clamp(0.95rem, 4vw, 1.05rem);
+				margin: 1.5rem 0;
+				width: 100%;
+				max-width: 300px;
+				text-align: center;
+				justify-content: center;
+			}
+
+			.technical-details-button svg {
+				width: 20px;
+				height: 20px;
+			}
+
+			/* Loading overlay mobile */
+			.loading-text {
+				font-size: clamp(1rem, 4vw, 1.1rem);
+				padding: 0 1rem;
+				text-align: center;
+			}
+
+			.load-progress-bar {
+				width: 80%;
+				max-width: 200px;
+			}
+
+			/* Team photo responsive */
+			.content-section img {
+				max-width: 100%;
+				height: auto;
+				border-radius: 8px;
+				margin-bottom: 1rem;
+			}
+
+			/* Scroll arrow mobile */
+			.scroll-arrow {
+				bottom: 20px;
+				font-size: 1.8rem;
+			}
+		}
+
+		/* Extra small mobile devices */
+		@media (max-width: 480px) {
+			.frame-text {
+				padding: 1rem 1.2rem;
+				margin: 0 0.5rem;
+				border-radius: 6px;
+			}
+
+			.content-section {
+				padding: 1.5rem 0.8rem;
+			}
+
+			.highlight-box {
+				padding: 1.2rem;
+				margin: 1rem 0;
+			}
+
+			.stats-grid {
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+
+			.stat-item {
+				padding: 1rem 0.6rem;
+			}
+
+			.benefit-item,
+			.team-member,
+			.timeline-item {
+				padding: 1.2rem;
+			}
+
+			.cta-button,
+			.technical-details-button {
+				padding: 1rem 1.5rem;
+				font-size: 0.95rem;
+			}
+		}
+
+		/* Landscape phone orientation */
+		@media (max-height: 500px) and (orientation: landscape) {
+			.frame-text {
+				top: 2%;
+				padding: 0.8rem 1.2rem;
+			}
+
+			.frame-text h2 {
+				font-size: 1.2rem;
+				margin-bottom: 0.5rem;
+			}
+
+			.frame-text p {
+				font-size: 0.9rem;
+			}
+		}
+
+		/* Hover states - disable on touch devices */
+		@media (hover: none) {
+
+			.stat-item:hover,
+			.benefit-item:hover,
+			.team-member:hover,
+			.timeline-item:hover,
+			.link-item:hover,
+			.cta-button:hover,
+			.technical-details-button:hover {
+				transform: none;
+				box-shadow: initial;
+			}
+
+			.link-item:hover {
+				background: #FEFEFE;
+				border-color: #ddd;
+			}
+
+			.link-item.primary:hover {
+				background: #FEFEFE;
+				border-color: #E1010E;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="loading-overlay" id="loadingOverlay">
+		<div class="loading-text">Loading demonstration...</div>
+		<div class="load-progress-bar">
+			<div class="load-progress-fill" id="loadBar"></div>
+		</div>
+	</div>
+
+	<div class="scroll-container" id="scrollContainer">
+
+		<div class="video-scroller" id="videoSection1" data-frame-count="19" data-frame-path="./intro/"
+			data-frames-per-pixel="0.05">
+			<div class="video-viewport">
+				<canvas class="video-scroller-canvas"></canvas>
+				<div class="frame-text" data-snap-frames='[]'>
+					<h2></h2>
+					<p></p>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<div>
+				<h1>RoboCup Junior Soccer Open</h1>
+				<p>
+					RoboCup is the world's largest <strong>autonomous robotics competition</strong>, bringing together over
+					<strong>4,000 participants from 40+ countries</strong>. In the Junior Soccer Open league, high school teams
+					build
+					<strong>fully autonomous robots</strong> that play competitive soccer matches—<strong>completely
+						hands-free</strong>.
+				</p>
+				<p>
+					We're working toward the <strong>European Championships (June 2026) and World Championships (July
+						2026)</strong>.
+				</p>
+				<div class="highlight-box primary"
+					style="text-align: center; border: 3px solid #E1010E; background: rgba(225, 1, 14, 0.1);">
+					<h2 style="color: #E1010E; font-size: 2rem; margin-bottom: 1rem;">PARTNER WITH US TO REACH THE WORLD STAGE
+					</h2>
+					<a href="mailto:contact@laquicheindustrielle.com" class="cta-button" style="margin-top: 0;">Contact Us
+						Now</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<div>
+				<h1>Our Achievements</h1>
+				<div class="stats-grid">
+					<div class="stat-item">
+						<span class="stat-number">4.5s</span>
+						Goal scoring time
+					</div>
+					<div class="stat-item">
+						<span class="stat-number">France 3</span>
+						TV Coverage
+					</div>
+					<div class="stat-item">
+						<span class="stat-number">1st</span>
+						Endurance Prize
+					</div>
+					<div class="stat-item">
+						<span class="stat-number">2y</span>
+						Competing in Nationals
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<div>
+				<h1>Partnership Opportunity</h1>
+				<div class="highlight-box primary" style="text-align: left; max-width: 600px; margin: 0 auto 2rem auto;">
+					<h2 style="color: #E1010E;">What We Need</h2>
+					<p>• High-performance motors<br>
+						• Advanced sensors (LiDAR systems)<br>
+						• Manufacturing materials<br>
+						• International travel funding<br>
+						• Electronic components (microcontrollers, wire, heat shrink)<br>
+				</div>
+
+				<h1 style="margin-bottom: 1.5rem; color: #E1010E;">What You Get</h1>
+				<div class="sponsor-benefits">
+					<div class="benefit-item">
+						<h3>Brand Visibility & Recognition</h3>
+						<p>Logo placement on our shirts, the robots, live robot demonstrations, and media exposure at
+							international
+							competitions.</p>
+					</div>
+					<!-- <div class="benefit-item"> -->
+					<!-- 	<h3>Recruitment Pipeline</h3> -->
+					<!-- 	<p>Priority interview access when we graduate - we're already building advanced systems at 17. Direct -->
+					<!-- 		connection to emerging engineering talent.</p> -->
+					<!-- </div> -->
+					<div class="benefit-item">
+						<h3>Content & Marketing Collaboration</h3>
+						<p>Co-branded case studies, tutorial videos featuring your components, and social media content. We'll
+							create technical explanations showcasing your products in action.</p>
+					</div>
+					<div class="benefit-item">
+						<h3>Innovation Testing Lab</h3>
+						<p>Test your prototype sensors/motors in our competitive environment with detailed performance feedback,
+							validation data, and real-world stress testing.</p>
+					</div>
+					<div class="benefit-item">
+						<h3>Young Engineer Access</h3>
+						<p>Direct collaboration with motivated high school engineers already building competition-level autonomous
+							systems and winning national recognition. We can come to live demonstrations of these technologies.</p>
+					</div>
+				</div>
+
+				<div style="text-align: center; margin-top: 2rem;">
+					<a href="mailto:contact@laquicheindustrielle.com" class="cta-button">Discuss Partnership</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<h1>Our current capabilities</h1>
+			<div class="video-scroller" id="videoSection2" data-frame-count="75" data-frame-path="./goal_video/"
+				data-frames-per-pixel="0.05">
+				<div class="video-viewport">
+					<canvas class="video-scroller-canvas"></canvas>
+					<div class="frame-text"
+						data-snap-frames='[{"frame": 35, "title": "4.5 Second Goal", "text": "Watch our robot autonomously score a goal in under 5 seconds", "fadeRange": 35}]'>
+						<h2></h2>
+						<p></p>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="content-section">
+			<div>
+				<h1>Our new plan for reaching reliability</h1>
+
+				<div class="highlight-box primary" style="text-align: center; margin-bottom: 2rem;">
+					<h2 style="color: #E1010E; margin-bottom: 1rem;">A system inspired from Aerospace engineering</h2>
+					<p style="font-size: 1.1rem;">After our recent failiures the day of the national competition, we realised that
+						we needed to rethink our systems rather than just making better robots. We took engineering
+						principles from one of the most safety-oriented domains in the world: aeronautics.</p>
+				</div>
+
+				<div class="sponsor-benefits"
+					style="grid-template-columns: 1fr; gap: 1.5rem; max-width: 800px; margin: 0 auto;">
+					<div class="benefit-item">
+						<h3>Independent System Validation</h3>
+						<p>Every subsystem tested independently by team members who didn't build it. Components must perform 3x
+							above requirements over hundreds of test cycles before integration.</p>
+					</div>
+					<div class="benefit-item">
+						<h3>Requirements-First Development</h3>
+						<p>Quantified performance standards before deeming it robot-worthy. Example: "robot maintains 1m/s speed in
+							1m circle for 100+ cycles without failure" measured and verified extensively before adding other systems
+							such as the camera.</p>
+					</div>
+					<div class="benefit-item">
+						<h3>Root Cause Analysis & Redesign</h3>
+						<p>When failures occur, we document everything, identify core issues, then redesign systems entirely rather
+							than simply fixing. We often fixed the robots rather than redesigning them because we lacked time.</p>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="content-section">
+			<div>
+				<h1>Technical Innovation</h1>
+
+				<div style="text-align: center; margin-bottom: 3rem;">
+					<a href="https://github.com/La-Quiche-Industruelle/Robocup-2025" target="_blank"
+						class="technical-details-button">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+							<path
+								d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+						</svg>
+						TECHNICAL DETAILS
+					</a>
+					<p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">Complete documentation, CAD files, code, and
+						performance data</p>
+				</div>
+
+				<div class="highlight-box">
+					<h2>360° Vision System</h2>
+					<p>Custom mathematical algorithms create cone shapes for uniform field mapping - giving us major advantages
+						over standard distorted mirrors.</p>
+					<a href="https://github.com/La-Quiche-Industruelle/Robocup-2025/tree/main/Cone%20Design" target="_blank"
+						style="display: inline-flex; align-items: center; gap: 0.5rem; color: #E1010E; font-weight: 600; text-decoration: none; margin-top: 0.5rem;">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+							<path
+								d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+						</svg>
+						Cone Design Repository
+					</a>
+				</div>
+				<div class="highlight-box">
+					<h2>Autonomous AI</h2>
+					<p>Real-time computer vision for ball tracking, goal identification, and strategic decision-making while
+						moving at competitive speeds.</p>
+					<a href="https://github.com/La-Quiche-Industrielle/Robocup-2025/tree/main/Code" target="_blank"
+						style="display: inline-flex; align-items: center; gap: 0.5rem; color: #E1010E; font-weight: 600; text-decoration: none; margin-top: 0.5rem;">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+							<path
+								d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+						</svg>
+						AI Code Repository
+					</a>
+				</div>
+				<div class="highlight-box">
+					<h2>Custom Electronics</h2>
+					<p>Everything designed and built by our team: PCBs, motor controllers, battery management, mechanical
+						components.</p>
+				</div>
+
+				<div class="links-grid">
+					<a href="https://www.youtube.com/watch?v=kvFWpQ_fnPc" target="_blank" class="link-item primary">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+							<path
+								d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+						</svg>
+						Robot Demonstration
+					</a>
+					<a href="https://junior.robocup.org/" target="_blank" class="link-item primary">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+							<path
+								d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
+						</svg>
+						RoboCup Official
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<img src="./team.jpg" alt="" style="width: 100%;">
+			<div>
+				<h1>The Team</h1>
+				<p style="margin-bottom: 2rem;">Three aspiring engineers who have designed and built competition-level
+					autonomous
+					systems from scratch. Students from <a href="https://www.eiffel-bordeaux.org/" target="_blank"
+						style="color: #E1010E; text-decoration: none;">Lycée Gustave Eiffel in Bordeaux</a>.
+				</p>
+				<div class="team-grid">
+					<div class="team-member">
+						<h3>Kaito</h3>
+						<p>Hardware systems engineer: custom PCB design, precision manufacturing, CNC machining, component
+							integration, and power management.</p>
+					</div>
+					<div class="team-member">
+						<h3>Chloé</h3>
+						<p>Integration specialist: electronics assembly, system testing, competition logistics, and performance
+							optimization under pressure.</p>
+					</div>
+					<div class="team-member">
+						<h3>Sacha</h3>
+						<p>AI systems architect: computer vision algorithms, autonomous decision-making, real-time strategy
+							implementation, and team communications.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<div>
+				<h1>Competition Timeline 2026</h1>
+				<p style="margin-bottom: 2rem;">Our path to the world championships - key dates and venues</p>
+				<div class="timeline-grid">
+					<div class="timeline-item current">
+						<div class="timeline-date">April 2026</div>
+						<div class="timeline-title">French Regionals</div>
+						<div class="timeline-location">Location to be anounced</div>
+						<p style="margin-top: 0.5rem; font-size: 0.9rem;">Qualify for national championships</p>
+					</div>
+					<div class="timeline-item">
+						<div class="timeline-date">May 2026</div>
+						<div class="timeline-title">French Nationals</div>
+						<div class="timeline-location">Location to be anounced</div>
+						<p style="margin-top: 0.5rem; font-size: 0.9rem;">Compete for European qualification</p>
+					</div>
+					<div class="timeline-item">
+						<div class="timeline-date">June 2026</div>
+						<div class="timeline-title">European Championships</div>
+						<div class="timeline-location">Location to be anounced</div>
+						<p style="margin-top: 0.5rem; font-size: 0.9rem;">Compete against Europe's best teams</p>
+					</div>
+					<div class="timeline-item">
+						<div class="timeline-date">July 2026</div>
+						<div class="timeline-title">World Championships</div>
+						<div class="timeline-location">Location to be anounced</div>
+						<p style="margin-top: 0.5rem; font-size: 0.9rem;">The ultimate global competition</p>
+					</div>
+				</div>
+				<p style="margin-top: 2rem; font-style: italic; color: #666;">Your support helps us reach these international
+					stages and represent French engineering excellence globally.</p>
+			</div>
+		</div>
+
+		<div class="content-section">
+			<div>
+				<h1>Ready to Partner?</h1>
+				<p style="font-size: 1.2rem; max-width: 600px;">Join us on our journey to the world championships. Your
+					investment directly supports young French engineers competing on the global stage.</p>
+				<a href="mailto:contact@laquicheindustrielle.com" class="cta-button"
+					style="font-size: 1.2rem; padding: 1.2rem 2.5rem;">Start Our Partnership</a>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="scroll-arrow" id="scrollArrow"></div>
+
+	<script>
+		// Class to manage a single video animation on scroll
+		class VideoScroller {
+			constructor(element) {
+				this.element = element;
+				this.canvas = element.querySelector('.video-scroller-canvas');
+				this.ctx = this.canvas.getContext('2d');
+				this.frameTextContainer = element.querySelector('.frame-text');
+
+				this.frameCount = parseInt(this.element.dataset.frameCount);
+				this.framePath = this.element.dataset.framePath;
+				this.snapFrames = JSON.parse(this.frameTextContainer.dataset.snapFrames);
+				this.framesPerPixel = parseFloat(this.element.dataset.framesPerPixel) || 0.5;
+
+				this.frames = [];
+				this.currentFrame = -1;
+				this.scrollableVideoRange = 0;
+				this.isMobile = this.checkIfMobile();
+				this.setup();
+			}
+
+			checkIfMobile() {
+				return window.innerWidth <= 768 || !window.matchMedia('(hover: hover)').matches || window.matchMedia('(pointer:coarse)').matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+			}
+
+			async setup() {
+				await this.loadFrames();
+				if (this.frames[0]) {
+					this.canvas.width = this.frames[0].width;
+					this.canvas.height = this.frames[0].height;
+				}
+				this.updateDimensions();
+				this.updateFrame(0);
+				window.addEventListener('resize', () => this.updateDimensions());
+				window.addEventListener('scroll', () => this.handleScroll());
+			}
+
+			async loadFrames() {
+				const loadPromises = [];
+				for (let i = 0; i < this.frameCount; i++) {
+					const promise = new Promise((resolve, reject) => {
+						const img = new Image();
+						img.onload = () => {
+							this.frames[i] = img;
+							updateOverallProgress();
+							resolve();
+						};
+						img.onerror = (e) => {
+							console.error(`Failed to load frame ${i} from ${this.framePath}:`, e);
+							reject(e);
+						};
+						img.src = `${this.framePath}${i.toString().padStart(4, '0')}.webp`;
+					});
+					loadPromises.push(promise);
+				}
+				await Promise.all(loadPromises);
+			}
+
+			updateDimensions() {
+				const windowHeight = window.innerHeight;
+				const requiredScrollHeight = this.frameCount / this.framesPerPixel;
+				this.element.style.height = `${requiredScrollHeight + windowHeight}px`;
+				this.scrollableVideoRange = this.element.offsetHeight - windowHeight;
+			}
+
+			handleScroll() {
+				const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+				const videoTop = this.element.offsetTop;
+				const endOfVideoAnimationScrollPoint = videoTop + this.scrollableVideoRange;
+				const isWithinVideoSection = scrollTop >= videoTop && scrollTop <= endOfVideoAnimationScrollPoint;
+
+				if (isWithinVideoSection && this.scrollableVideoRange > 0) {
+					const scrollProgress = Math.max(0, Math.min(1, (scrollTop - videoTop) / this.scrollableVideoRange));
+					const frameIndex = Math.floor(scrollProgress * (this.frameCount - 1));
+					if (!isNaN(frameIndex)) {
+						this.updateFrame(frameIndex);
+					}
+				} else if (scrollTop < videoTop) {
+					this.updateFrame(0);
+				} else if (scrollTop > endOfVideoAnimationScrollPoint) {
+					this.updateFrame(this.frameCount - 1);
+				}
+			}
+
+			updateFrame(frameIndex) {
+				frameIndex = Math.max(0, Math.min(frameIndex, this.frameCount - 1));
+				if (this.frames[frameIndex] && this.frames[frameIndex].complete) {
+					this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+					this.ctx.drawImage(this.frames[frameIndex], 0, 0, this.canvas.width, this.canvas.height);
+					this.currentFrame = frameIndex;
+					this.updateFrameText(frameIndex);
+				}
+			}
+
+			updateFrameText(frameIndex) {
+				let activeSnap = null;
+				let maxOpacity = 0;
+				const mobile = this.isMobile;
+
+				this.snapFrames.forEach(snapData => {
+					if (!snapData.title) return;
+					const distance = Math.abs(snapData.frame - frameIndex);
+					const fadeRange = mobile ? (snapData.fadeRangeMobile || snapData.fadeRange * 2) : snapData.fadeRange;
+
+					if (distance <= fadeRange) {
+						const opacity = 1 - (distance / fadeRange);
+						if (opacity > maxOpacity) {
+							maxOpacity = opacity;
+							activeSnap = snapData;
+						}
+					}
+				});
+
+				if (activeSnap && maxOpacity > 0) {
+					this.frameTextContainer.querySelector('h2').textContent = activeSnap.title;
+					this.frameTextContainer.querySelector('p').textContent = activeSnap.text;
+					this.frameTextContainer.style.opacity = maxOpacity;
+					this.frameTextContainer.classList.add('active');
+				} else {
+					this.frameTextContainer.style.opacity = 0;
+					this.frameTextContainer.classList.remove('active');
+				}
+			}
+		}
+
+		const loadingOverlay = document.getElementById('loadingOverlay');
+		const loadBar = document.getElementById('loadBar');
+		const scrollArrow = document.getElementById('scrollArrow');
+		const videoScrollers = [];
+		let totalFrameCount = 0;
+		let loadedFrameCount = 0;
+
+		function updateOverallProgress() {
+			loadedFrameCount++;
+			const progress = (loadedFrameCount / totalFrameCount) * 100;
+			loadBar.style.width = `${progress}%`;
+
+			if (loadedFrameCount >= totalFrameCount) {
+				setTimeout(() => {
+					loadingOverlay.style.opacity = 0;
+					setTimeout(() => loadingOverlay.style.display = 'none', 500);
+				}, 500);
+			}
+		}
+
+		function initialize() {
+			const scrollerElements = document.querySelectorAll('.video-scroller');
+			scrollerElements.forEach(el => {
+				totalFrameCount += parseInt(el.dataset.frameCount);
+				const scroller = new VideoScroller(el);
+				videoScrollers.push(scroller);
+			});
+
+			if (videoScrollers.length === 0) {
+				loadingOverlay.style.display = 'none';
+			}
+
+			function updateScrollArrow() {
+				const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+				scrollArrow.style.opacity = scrollTop < 100 ? 1 : 0;
+			}
+
+			scrollArrow.addEventListener('click', () => {
+				window.scrollTo({
+					top: window.innerHeight,
+					behavior: 'smooth'
+				});
+			});
+
+			window.addEventListener('scroll', updateScrollArrow);
+			updateScrollArrow();
+		}
+
+		window.addEventListener('resize', () => {
+			videoScrollers.forEach(scroller => scroller.handleScroll());
+		});
+
+		initialize();
+	</script>
+</body>
+
+</html>
